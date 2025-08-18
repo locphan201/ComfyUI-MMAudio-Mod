@@ -1,1 +1,1 @@
-from mmaudio.ext.synchformer.synchformer import Synchformer
+from ...ext.synchformer.synchformer import Synchformer

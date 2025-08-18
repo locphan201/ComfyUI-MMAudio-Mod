@@ -16,11 +16,11 @@ from torch.nn import Conv1d, ConvTranspose1d
 from torch.nn.utils.parametrizations import weight_norm
 from torch.nn.utils.parametrize import remove_parametrizations
 
-from mmaudio.ext.bigvgan_v2 import activations
-from mmaudio.ext.bigvgan_v2.alias_free_activation.torch.act import \
+from ...ext.bigvgan_v2 import activations
+from ...ext.bigvgan_v2.alias_free_activation.torch.act import \
     Activation1d as TorchActivation1d
-from mmaudio.ext.bigvgan_v2.env import AttrDict
-from mmaudio.ext.bigvgan_v2.utils import get_padding, init_weights
+from ...ext.bigvgan_v2.env import AttrDict
+from ...ext.bigvgan_v2.utils import get_padding, init_weights
 
 
 def load_hparams_from_json(path) -> AttrDict:

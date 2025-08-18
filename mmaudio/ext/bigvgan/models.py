@@ -10,9 +10,9 @@ from torch.nn import Conv1d, ConvTranspose1d
 from torch.nn.utils.parametrizations import weight_norm
 from torch.nn.utils.parametrize import remove_parametrizations
 
-from mmaudio.ext.bigvgan import activations
-from mmaudio.ext.bigvgan.alias_free_torch import *
-from mmaudio.ext.bigvgan.utils import get_padding, init_weights
+from ...ext.bigvgan import activations
+from ...ext.bigvgan.alias_free_torch import *
+from ...ext.bigvgan.utils import get_padding, init_weights
 
 LRELU_SLOPE = 0.1
 

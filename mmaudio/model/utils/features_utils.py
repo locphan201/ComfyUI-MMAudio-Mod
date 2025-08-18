@@ -5,13 +5,15 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from einops import rearrange
-from open_clip import create_model_from_pretrained
 from torchvision.transforms import Normalize
+from open_clip import create_model_from_pretrained
 
-from mmaudio.ext.autoencoder import AutoEncoderModule
-from mmaudio.ext.mel_converter import get_mel_converter
-from mmaudio.ext.synchformer import Synchformer
-from mmaudio.model.utils.distributions import DiagonalGaussianDistribution
+from ...ext.autoencoder import AutoEncoderModule
+from ...ext.mel_converter import get_mel_converter
+from ...ext.synchformer import Synchformer
+from ...ext.mel_converter import MelConverter
+from ...model.utils.distributions import DiagonalGaussianDistribution
+from ...ext.bigvgan import BigVGAN
 
 
 def patch_clip(clip_model):
@@ -64,10 +66,12 @@ class FeaturesUtils(nn.Module):
 
         if tod_vae_ckpt is not None:
             self.mel_converter = get_mel_converter(mode)
-            self.tod = AutoEncoderModule(vae_ckpt_path=tod_vae_ckpt,
-                                         vocoder_ckpt_path=bigvgan_vocoder_ckpt,
-                                         mode=mode,
-                                         need_vae_encoder=need_vae_encoder)
+            self.tod = AutoEncoderModule(
+                vae_ckpt_path=tod_vae_ckpt,
+                vocoder_ckpt_path=bigvgan_vocoder_ckpt,
+                mode=mode,
+                need_vae_encoder=need_vae_encoder
+            )
         else:
             self.tod = None
 

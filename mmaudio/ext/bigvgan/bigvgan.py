@@ -4,10 +4,9 @@ import torch
 import torch.nn as nn
 from omegaconf import OmegaConf
 
-from mmaudio.ext.bigvgan.models import BigVGANVocoder
+from ...ext.bigvgan.models import BigVGANVocoder
 
 _bigvgan_vocoder_path = Path(__file__).parent / 'bigvgan_vocoder.yml'
-
 
 class BigVGAN(nn.Module):
 
@@ -20,6 +19,11 @@ class BigVGAN(nn.Module):
 
         self.weight_norm_removed = False
         self.remove_weight_norm()
+
+    @classmethod
+    def from_pretrained(cls, ckpt_path, config_path=_bigvgan_vocoder_path):
+        # Create an instance of BigVGAN using the provided checkpoint path
+        return cls(ckpt_path, config_path)
 
     @torch.inference_mode()
     def forward(self, x):

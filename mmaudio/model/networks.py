@@ -6,10 +6,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from mmaudio.ext.rotary_embeddings import compute_rope_rotations
-from mmaudio.model.embeddings import TimestepEmbedder
-from mmaudio.model.low_level import MLP, ChannelLastConv1d, ConvMLP
-from mmaudio.model.transformer_layers import (FinalBlock, JointBlock, MMDitSingleBlock)
+from ..ext.rotary_embeddings import compute_rope_rotations
+from .embeddings import TimestepEmbedder
+from .low_level import MLP, ChannelLastConv1d, ConvMLP
+from .transformer_layers import (FinalBlock, JointBlock, MMDitSingleBlock)
 
 log = logging.getLogger()
 
@@ -283,7 +283,6 @@ class MMAudio(nn.Module):
         for block in self.fused_blocks:
             latent = block(latent, extended_c, self.latent_rot)
 
-        # should be extended_c; this is a minor implementation error #55
         flow = self.final_layer(latent, global_c)  # (B, N, out_dim), remove t
         return flow
 

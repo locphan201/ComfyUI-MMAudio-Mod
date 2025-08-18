@@ -5,9 +5,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 from einops import rearrange
 from einops.layers.torch import Rearrange
+from torch.nn.attention import SDPBackend, sdpa_kernel
 
-from mmaudio.ext.rotary_embeddings import apply_rope
-from mmaudio.model.low_level import MLP, ChannelLastConv1d, ConvMLP
+from ..ext.rotary_embeddings import apply_rope
+from .low_level import MLP, ChannelLastConv1d, ConvMLP
 
 
 def modulate(x: torch.Tensor, shift: torch.Tensor, scale: torch.Tensor):

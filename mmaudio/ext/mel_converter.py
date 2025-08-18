@@ -1,12 +1,12 @@
 # Reference: # https://github.com/bytedance/Make-An-Audio-2
-from typing import Literal
 
 import torch
 import torch.nn as nn
 from librosa.filters import mel as librosa_mel_fn
+from typing import Literal
 
 
-def dynamic_range_compression_torch(x, C=1, clip_val=1e-5, *, norm_fn):
+def dynamic_range_compression_torch(x, C=1, clip_val=1e-5, norm_fn=torch.log10):
     return norm_fn(torch.clamp(x, min=clip_val) * C)
 
 
@@ -20,14 +20,14 @@ class MelConverter(nn.Module):
     def __init__(
         self,
         *,
-        sampling_rate: float,
-        n_fft: int,
-        num_mels: int,
-        hop_size: int,
-        win_size: int,
-        fmin: float,
-        fmax: float,
-        norm_fn,
+        sampling_rate: float = 16_000,
+        n_fft: int = 1024,
+        num_mels: int = 80,
+        hop_size: int = 256,
+        win_size: int = 1024,
+        fmin: float = 0,
+        fmax: float = 8_000,
+        norm_fn=torch.log10,
     ):
         super().__init__()
         self.sampling_rate = sampling_rate
@@ -81,7 +81,6 @@ class MelConverter(nn.Module):
         spec = spectral_normalize_torch(spec, self.norm_fn)
 
         return spec
-
 
 def get_mel_converter(mode: Literal['16k', '44k']) -> MelConverter:
     if mode == '16k':

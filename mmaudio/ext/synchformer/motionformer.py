@@ -7,8 +7,8 @@ from omegaconf import OmegaConf
 from timm.layers import trunc_normal_
 from torch import nn
 
-from mmaudio.ext.synchformer.utils import check_if_file_exists_else_download
-from mmaudio.ext.synchformer.video_model_builder import VisionTransformer
+from ...ext.synchformer.utils import check_if_file_exists_else_download
+from ...ext.synchformer.video_model_builder import VisionTransformer
 
 FILE2URL = {
     # cfg
