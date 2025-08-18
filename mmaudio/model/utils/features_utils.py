@@ -5,12 +5,13 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from einops import rearrange
+from open_clip import create_model_from_pretrained
 from torchvision.transforms import Normalize
 
-
-from ...ext.mel_converter import MelConverter
-from ...model.utils.distributions import DiagonalGaussianDistribution
-from ...ext.bigvgan import BigVGAN
+from mmaudio.ext.autoencoder import AutoEncoderModule
+from mmaudio.ext.mel_converter import get_mel_converter
+from mmaudio.ext.synchformer import Synchformer
+from mmaudio.model.utils.distributions import DiagonalGaussianDistribution
 
 
 def patch_clip(clip_model):
@@ -35,22 +36,25 @@ class FeaturesUtils(nn.Module):
     def __init__(
         self,
         *,
-        vae: None,
-        synchformer: None,
-        clip_model: None,
+        tod_vae_ckpt: Optional[str] = None,
+        bigvgan_vocoder_ckpt: Optional[str] = None,
+        synchformer_ckpt: Optional[str] = None,
         enable_conditions: bool = True,
+        mode=Literal['16k', '44k'],
+        need_vae_encoder: bool = True,
     ):
         super().__init__()
 
         if enable_conditions:
-            #self.clip_model = create_model_from_pretrained('hf-hub:apple/DFN5B-CLIP-ViT-H-14-384',
-            #                                               return_transform=False)
-            self.clip_model = clip_model
+            self.clip_model = create_model_from_pretrained('hf-hub:apple/DFN5B-CLIP-ViT-H-14-384',
+                                                           return_transform=False)
             self.clip_preprocess = Normalize(mean=[0.48145466, 0.4578275, 0.40821073],
                                              std=[0.26862954, 0.26130258, 0.27577711])
             self.clip_model = patch_clip(self.clip_model)
 
-            self.synchformer = synchformer
+            self.synchformer = Synchformer()
+            self.synchformer.load_state_dict(
+                torch.load(synchformer_ckpt, weights_only=True, map_location='cpu'))
 
             self.tokenizer = open_clip.get_tokenizer('ViT-H-14-378-quickgelu')  # same as 'ViT-H-14'
         else:
@@ -58,18 +62,21 @@ class FeaturesUtils(nn.Module):
             self.synchformer = None
             self.tokenizer = None
 
-        
-        self.tod = vae
-        self.mel_converter = MelConverter()
+        if tod_vae_ckpt is not None:
+            self.mel_converter = get_mel_converter(mode)
+            self.tod = AutoEncoderModule(vae_ckpt_path=tod_vae_ckpt,
+                                         vocoder_ckpt_path=bigvgan_vocoder_ckpt,
+                                         mode=mode,
+                                         need_vae_encoder=need_vae_encoder)
+        else:
+            self.tod = None
 
     def compile(self):
         if self.clip_model is not None:
-            self.encode_video_with_clip = torch.compile(self.encode_video_with_clip)
             self.clip_model.encode_image = torch.compile(self.clip_model.encode_image)
             self.clip_model.encode_text = torch.compile(self.clip_model.encode_text)
         if self.synchformer is not None:
             self.synchformer = torch.compile(self.synchformer)
-        self.tod.encode = torch.compile(self.tod.encode)
         self.decode = torch.compile(self.decode)
         self.vocode = torch.compile(self.vocode)
 
@@ -114,9 +121,11 @@ class FeaturesUtils(nn.Module):
         outputs = []
         if batch_size < 0:
             batch_size = b
-        for i in range(0, b, batch_size):
+        x = rearrange(x, 'b s t c h w -> (b s) 1 t c h w')
+        for i in range(0, b * num_segments, batch_size):
             outputs.append(self.synchformer(x[i:i + batch_size]))
-        x = torch.cat(outputs, dim=0).flatten(start_dim=1, end_dim=2)
+        x = torch.cat(outputs, dim=0)
+        x = rearrange(x, '(b s) 1 t d -> b (s t) d', b=b)
         return x
 
     @torch.inference_mode()

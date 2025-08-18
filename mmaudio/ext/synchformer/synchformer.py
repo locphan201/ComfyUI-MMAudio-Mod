@@ -4,7 +4,7 @@ from typing import Any, Mapping
 import torch
 from torch import nn
 
-from ...ext.synchformer.motionformer import MotionFormer
+from mmaudio.ext.synchformer.motionformer import MotionFormer
 
 
 class Synchformer(nn.Module):
