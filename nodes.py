@@ -5,6 +5,9 @@ from .mmaudio.model.flow_matching import FlowMatching
 from .mmaudio.model.networks import MMAudio, get_my_mmaudio
 from .mmaudio.model.utils.features_utils import FeaturesUtils
 import folder_paths
+import logging
+
+log = logging.getLogger()
 
 if not "mmaudio" in folder_paths.folder_names_and_paths:
     folder_paths.add_model_folder_path("mmaudio", os.path.join(folder_paths.models_dir, "mmaudio"))
@@ -58,6 +61,9 @@ class MMAudioSamplerMod:
 
     def sample(self, video_path, duration, cfg, prompt, negative_prompt, output_dir: str = 'output/mmaudio'):
         os.makedirs(output_dir, exist_ok=True)
+
+        log.info(f'Model: {model.model_path}')
+        print(f'Model: {model.model_path}')
 
         video_info = load_video(video_path, duration)
         clip_frames = video_info.clip_frames.unsqueeze(0)
