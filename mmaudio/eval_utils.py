@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Optional
 
 import torch
-
+import os
 import numpy as np
 from PIL import Image
 
@@ -25,6 +25,9 @@ class ModelConfig:
     bigvgan_16k_path: Optional[Path] = None
     mode: str = '44k'
     synchformer_ckpt: Path = Path('ComfyUI/models/mmaudio/ext_weights/synchformer_state_dict.pth')
+
+    log.info(os.getcwd())
+    print(os.getcwd())
 
     @property
     def seq_cfg(self):
