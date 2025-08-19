@@ -20,11 +20,11 @@ log = logging.getLogger()
 @dataclasses.dataclass
 class ModelConfig:
     model_name: str = 'large_44k_v2'
-    model_path: Path = Path('./models/mmaudio/weights/mmaudio_large_44k_v2.pth')
-    vae_path: Path = Path('./models/mmaudio/ext_weights/v1-44.pth')
+    model_path: Path = Path('./ComfyUI/models/mmaudio/weights/mmaudio_large_44k_v2.pth')
+    vae_path: Path = Path('./ComfyUI/models/mmaudio/ext_weights/v1-44.pth')
     bigvgan_16k_path: Optional[Path] = None
     mode: str = '44k'
-    synchformer_ckpt: Path = Path('./models/mmaudio/ext_weights/synchformer_state_dict.pth')
+    synchformer_ckpt: Path = Path('./ComfyUI/models/mmaudio/ext_weights/synchformer_state_dict.pth')
 
     @property
     def seq_cfg(self):
