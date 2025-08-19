@@ -4,12 +4,23 @@ from .mmaudio.eval_utils import ModelConfig, generate, load_video, make_video
 from .mmaudio.model.flow_matching import FlowMatching
 from .mmaudio.model.networks import MMAudio, get_my_mmaudio
 from .mmaudio.model.utils.features_utils import FeaturesUtils
-    
+import folder_paths
+
+if not "mmaudio" in folder_paths.folder_names_and_paths:
+    folder_paths.add_model_folder_path("mmaudio", os.path.join(folder_paths.models_dir, "mmaudio"))
+
 torch.backends.cuda.matmul.allow_tf32 = True
 torch.backends.cudnn.allow_tf32 = True
 
 # === Preload everything globally ===
-model: ModelConfig = ModelConfig()
+model: ModelConfig = ModelConfig(
+    model_name='large_44k_v2',
+    model_path=folder_paths.get_full_path_or_raise('mmaudio', 'weights', 'mmaudio_large_44k_v2.pth'),
+    vae_path=folder_paths.get_full_path_or_raise('mmaudio', 'ext_weights', 'v1-44.pth'),
+    bigvgan_16k_path=None,
+    mode = '44k',
+    synchformer_ckpt=folder_paths.get_full_path_or_raise('mmaudio', 'ext_weights', 'synchformer_state_dict.pth'),
+)
 seq_cfg = model.seq_cfg
 
 net: MMAudio = get_my_mmaudio(model.model_name).to('cuda', torch.float32).eval()

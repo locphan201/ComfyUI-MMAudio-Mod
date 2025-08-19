@@ -19,12 +19,12 @@ log = logging.getLogger()
 
 @dataclasses.dataclass
 class ModelConfig:
-    model_name: str = 'large_44k_v2'
-    model_path: str = folder_paths.get_full_path_or_raise('mmaudio', 'weights', 'mmaudio_large_44k_v2.pth')
-    vae_path: str = folder_paths.get_full_path_or_raise('mmaudio', 'ext_weights', 'v1-44.pth')
-    bigvgan_16k_path: Optional[Path] = None
-    mode: str = '44k'
-    synchformer_ckpt: str = folder_paths.get_full_path_or_raise('mmaudio', 'ext_weights', 'synchformer_state_dict.pth')
+    model_name: str
+    model_path: str
+    vae_path: str
+    bigvgan_16k_path: Optional[Path]
+    mode: str
+    synchformer_ckpt: str
     
     @property
     def seq_cfg(self):
