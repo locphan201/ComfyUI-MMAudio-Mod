@@ -18,11 +18,11 @@ torch.backends.cudnn.allow_tf32 = True
 # === Preload everything globally ===
 model: ModelConfig = ModelConfig(
     model_name='large_44k_v2',
-    model_path=folder_paths.get_full_path_or_raise('mmaudio', 'weights', 'mmaudio_large_44k_v2.pth'),
-    vae_path=folder_paths.get_full_path_or_raise('mmaudio', 'ext_weights', 'v1-44.pth'),
+    model_path=folder_paths.get_full_path_or_raise('mmaudio/weights', 'mmaudio_large_44k_v2.pth'),
+    vae_path=folder_paths.get_full_path_or_raise('mmaudio/ext_weights', 'v1-44.pth'),
     bigvgan_16k_path=None,
     mode = '44k',
-    synchformer_ckpt=folder_paths.get_full_path_or_raise('mmaudio', 'ext_weights', 'synchformer_state_dict.pth'),
+    synchformer_ckpt=folder_paths.get_full_path_or_raise('mmaudio/ext_weights', 'synchformer_state_dict.pth'),
 )
 seq_cfg = model.seq_cfg
 
