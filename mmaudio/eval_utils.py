@@ -1,13 +1,13 @@
 import dataclasses
 import logging
-from pathlib import Path
 from typing import Optional
-
+from pathlib import Path
 import torch
 import os
 import numpy as np
 from PIL import Image
 
+import folder_paths
 from .data.av_utils import ImageInfo, VideoInfo, read_frames, reencode_with_audio
 from .model.flow_matching import FlowMatching
 from .model.networks import MMAudio
@@ -20,15 +20,12 @@ log = logging.getLogger()
 @dataclasses.dataclass
 class ModelConfig:
     model_name: str = 'large_44k_v2'
-    model_path: Path = Path('ComfyUI/models/mmaudio/weights/mmaudio_large_44k_v2.pth')
-    vae_path: Path = Path('ComfyUI/models/mmaudio/ext_weights/v1-44.pth')
+    model_path: str = folder_paths.get_full_path_or_raise('mmaudio', 'weights', 'mmaudio_large_44k_v2.pth')
+    vae_path: str = folder_paths.get_full_path_or_raise('mmaudio', 'ext_weights', 'v1-44.pth')
     bigvgan_16k_path: Optional[Path] = None
     mode: str = '44k'
-    synchformer_ckpt: Path = Path('ComfyUI/models/mmaudio/ext_weights/synchformer_state_dict.pth')
-
-    log.info(os.getcwd())
-    print(os.getcwd())
-
+    synchformer_ckpt: str = folder_paths.get_full_path_or_raise('mmaudio', 'ext_weights', 'synchformer_state_dict.pth')
+    
     @property
     def seq_cfg(self):
         return CONFIG_44K
